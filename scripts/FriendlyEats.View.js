@@ -387,6 +387,48 @@ FriendlyEats.prototype.viewRestaurant = function(id) {
     });
 };
 
+FriendlyEats.prototype.viewItem = function(id) {
+  var sectionHeaderEl;
+  var that = this;
+
+  return this.getItem(id)
+    .then(function(doc) {
+      var data = doc.data();
+      var dialog =  that.dialogs.add_review;
+
+      data.show_add_review = function() {
+        dialog.show();
+      };
+
+      sectionHeaderEl = that.renderTemplate('item-header', data);
+      sectionHeaderEl
+        .querySelector('.name')
+        .append(that.renderName(data.name));
+      mainEl = that.renderTemplate('main');
+
+      ratings.forEach(function(rating) {
+        var data = rating.data();
+        var el = that.renderTemplate('review-card', data);
+        el.querySelector('.rating').append(that.renderRating(data.rating));
+        mainEl.querySelector('#cards').append(el);
+      });
+
+      var headerEl = that.renderTemplate('header-base', {
+        hasSectionHeader: true
+      });
+
+      that.replaceElement(document.querySelector('.header'), sectionHeaderEl);
+      that.replaceElement(document.querySelector('main'), mainEl);
+    })
+    .then(function() {
+      that.router.updatePageLinks();
+    })
+    .catch(function(err) {
+      console.warn('Error rendering page', err);
+    });
+};
+
+
 FriendlyEats.prototype.renderTemplate = function(id, data) {
   var template = this.templates[id];
   var el = template.cloneNode(true);
@@ -522,12 +564,18 @@ FriendlyEats.prototype.renderRating = function(rating) {
   return el;
 };
 
+
 FriendlyEats.prototype.renderPrice = function(price) {
   var el = this.renderTemplate('price', {});
   for (var r = 0; r < price; r += 1) {
     el.append('$');
   }
   return el;
+};
+
+
+FriendlyEats.prototype.renderName = function(name) {
+  return this.renderTemplate('name', {itemName: name});
 };
 
 FriendlyEats.prototype.replaceElement = function(parent, content) {
