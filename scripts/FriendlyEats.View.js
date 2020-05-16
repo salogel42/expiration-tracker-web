@@ -36,9 +36,7 @@ FriendlyEats.prototype.viewList = function(filters, filter_description) {
   }
 
   var mainEl = this.renderTemplate('main-adjusted');
-  var headerEl = this.renderTemplate('header-base', {
-    hasSectionHeader: true
-  });
+  var headerEl = document.querySelector('#site-header')
 
   this.replaceElement(
     headerEl.querySelector('#section-header'),
@@ -47,7 +45,6 @@ FriendlyEats.prototype.viewList = function(filters, filter_description) {
     })
   );
 
-  this.replaceElement(document.querySelector('.header'), headerEl);
   this.replaceElement(document.querySelector('main'), mainEl);
 
   var that = this;
@@ -370,7 +367,7 @@ FriendlyEats.prototype.renderTemplate = function(id, data) {
   var el = template.cloneNode(true);
   el.removeAttribute('hidden');
   this.render(el, data);
-  
+
   // set an id in case we need to access the element later
   if (data && data['.id']) {
     // for `querySelector` to work, ids must start with a string

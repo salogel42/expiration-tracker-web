@@ -53,23 +53,23 @@
 </head>
 <body>
 <div>
-  <div class="header"></div>
+  <header id="site-header" class="mdc-toolbar mdc-toolbar--fixed">
+    <div id="title" class="mdc-toolbar__row mdc-layout-grid">
+      <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+        <span class="material-icons mdc-toolbar__icon--menu">restaurant</span>
+        <span class="mdc-toolbar__title">FriendlyEats</span>
+      </section>
+      <section class="develop-toolbar__section mdc-toolbar__section mdc-toolbar__section--align-end develop-toolbar__section--fit-content">
+        <button disabled id="quickstart-sign-in" class="mdc-button">Sign in with Google</button>
+      </section>
+    </div>
+    <div id="section-header" data-fir-if="hasSectionHeader"></div>
+  </header>
 
   <main></main>
 
   <div class="dialogs"></div>
 
-  <div hidden class="template" id="header-base">
-      <header id="site-header" class="mdc-toolbar mdc-toolbar--fixed">
-        <div id="title" class="mdc-toolbar__row mdc-layout-grid">
-          <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-            <span class="material-icons mdc-toolbar__icon--menu">restaurant</span>
-            <span class="mdc-toolbar__title">FriendlyEats</span>
-          </section>
-        </div>
-        <div id="section-header" data-fir-if="hasSectionHeader"></div>
-      </header>
-  </div>
 
   <div hidden class="template" id="main-adjusted">
     <div id="message-cards-container" class="mdc-layout-grid mdc-toolbar-fixed-adjust">

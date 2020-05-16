@@ -1,5 +1,6 @@
 {
   "projects": {
-    "firestore": "expiration-tracker-276323"
+    "auth": "expiration-tracker-276323",
+    "web": "expiration-tracker-276323"
   }
 }

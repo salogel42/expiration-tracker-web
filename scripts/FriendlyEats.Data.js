@@ -21,6 +21,7 @@ FriendlyEats.prototype.addRestaurant = function (data) {
 };
 
 FriendlyEats.prototype.getAllRestaurants = function (render) {
+  console.log("trying to get all rest")
   const query = firebase.firestore()
     .collection('restaurants')
     .orderBy('avgRating', 'desc')
@@ -29,7 +30,7 @@ FriendlyEats.prototype.getAllRestaurants = function (render) {
 };
 
 FriendlyEats.prototype.getDocumentsInQuery = function (query, render) {
-  query.onSnapshot((snapshot) => {
+  this.unsubscribe = query.onSnapshot((snapshot) => {
     if (!snapshot.size) {
       return render();
     }
@@ -40,13 +41,19 @@ FriendlyEats.prototype.getDocumentsInQuery = function (query, render) {
       }
     });
   });
+  console.log("just set unsub: " + this.unsubscribe + ", " + this)
 };
 
 FriendlyEats.prototype.getRestaurant = function (id) {
   return firebase.firestore().collection('restaurants').doc(id).get();
 };
 
+FriendlyEats.prototype.getItem = function (id) {
+  return firebase.firestore().collection('items').doc(id).get();
+};
+
 FriendlyEats.prototype.getFilteredRestaurants = function (filters, render) {
+  console.log("getting filtered")
   let query = firebase.firestore().collection('restaurants');
 
   if (filters.category !== 'Any') {

@@ -26,23 +26,124 @@ function FriendlyEats() { // eslint-disable-line no-redeclare
     sort: 'Rating'
   };
 
+  this.unsubscribe = null;
+  this.user = {}
   this.dialogs = {};
+
 
   var that = this;
 
-  firebase.firestore().enablePersistence()
-    .then(function() {
-      return firebase.auth().signInAnonymously();
-    })
-    .then(function() {
-      that.initTemplates();
-      that.initRouter();
-      that.initReviewDialog();
-      that.initFilterDialog();
-    }).catch(function(err) {
-      console.log(err);
-    });
+  console.log("in the FriendlyEats function")
+
 }
+
+FriendlyEats.prototype.toggleSignIn = function() {
+  console.log('In toggleSignIn')
+  if (!firebase.auth().currentUser) {
+    // [START createprovider]
+    var provider = new firebase.auth.GoogleAuthProvider();
+    // [END createprovider]
+    // [START addscopes]
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    // [END addscopes]
+    // [START signin]
+
+    firebase.auth().signInWithPopup(provider)
+      .then(function() {
+        console.log('In the then')
+        // that.initTemplates();
+        // that.initRouter();
+        // that.initReviewDialog();
+        // that.initFilterDialog();
+      }).catch(function(err) {
+        console.log(err);
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // [START_EXCLUDE]
+        if (errorCode === 'auth/account-exists-with-different-credential') {
+          alert('You have already signed up with a different auth provider for that email.');
+          // If you are using multiple auth providers on your app you should handle linking
+          // the user's accounts here.
+        }
+        // [END_EXCLUDE]
+      });
+      // [END signin]
+  } else {
+    // [START signout]
+    firebase.auth().signOut();
+    // [END signout]
+  }
+  // [START_EXCLUDE]
+  document.getElementById('quickstart-sign-in').disabled = true;
+  // [END_EXCLUDE]
+}
+// [END buttoncallback]
+
+/**
+ * initApp handles setting up UI event listeners and registering Firebase auth listeners:
+ *  - firebase.auth().onAuthStateChanged: This listener is called when the user is signed in or
+ *    out, and that is where we update the UI.
+ */
+function initApp(fe) {
+  // Listening for auth state changes.
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      console.log("in auth listener")
+      // The signed-in user info.
+      fe.user = user;
+      fe.initTemplates();
+      fe.initRouter();
+      fe.initReviewDialog();
+      fe.initFilterDialog();
+
+      // User is signed in.
+      document.getElementById('quickstart-sign-in').textContent = 'Sign out';
+    } else {
+      console.log("in the else")
+
+      console.log("in the else in toggleSignIn, " + this.unsubscribe)
+      if (fe.unsubscribe) {
+        console.log("calling unsub")
+        fe.unsubscribe()
+      }
+      if (fe.unsub2) {
+        fe.unsub2()
+      }
+      var div = document.querySelector('main');
+      while(div.firstChild) {
+          div.removeChild(div.firstChild);
+      }
+
+      var div = document.querySelector('#section-header');
+      while(div.firstChild) {
+          div.removeChild(div.firstChild);
+      }
+
+
+      // window.reload()
+      // fe.user = user;
+      // fe.initTemplates();
+      // fe.initRouter();
+      // fe.initReviewDialog();
+      // fe.initFilterDialog();
+      // // User is signed out.
+      document.getElementById('quickstart-sign-in').textContent = 'Sign in with Google';
+    }
+    document.getElementById('quickstart-sign-in').disabled = false;
+  });
+
+  console.log("in initApp")
+  document.getElementById('quickstart-sign-in').disabled = false;
+  // fe.initTemplates();
+
+  document.getElementById('quickstart-sign-in').addEventListener('click', fe.toggleSignIn, false);
+}
+
 
 /**
  * Initializes the router for the FriendlyEats app.
@@ -69,9 +170,16 @@ FriendlyEats.prototype.initRouter = function() {
         that.viewRestaurant(id);
       }
     })
+    .on({
+      '/items/*': function() {
+        var path = that.getCleanPath(document.location.pathname);
+        var id = path.split('/')[2];
+        that.viewItem(id);
+      }
+    })
     .resolve();
 
-  firebase
+  this.unsub2 = firebase
     .firestore()
     .collection('restaurants')
     .limit(1)
@@ -199,4 +307,5 @@ FriendlyEats.prototype.data = {
 
 window.onload = function() {
   window.app = new FriendlyEats();
+  initApp(window.app);
 };
