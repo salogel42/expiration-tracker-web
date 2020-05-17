@@ -27,61 +27,11 @@ function FriendlyEats() { // eslint-disable-line no-redeclare
   };
 
   this.unsubscribe = null;
-  this.user = {}
+  this.user = null
   this.dialogs = {};
 
   var that = this;
-
-  console.log("in the FriendlyEats function")
-
 }
-
-FriendlyEats.prototype.toggleSignIn = function() {
-  console.log('In toggleSignIn')
-  if (!firebase.auth().currentUser) {
-    // [START createprovider]
-    var provider = new firebase.auth.GoogleAuthProvider();
-    // [END createprovider]
-    // [START addscopes]
-    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-    // [END addscopes]
-    // [START signin]
-
-    firebase.auth().signInWithPopup(provider)
-      .then(function() {
-        console.log('In the then')
-        // that.initTemplates();
-        // that.initRouter();
-        // that.initReviewDialog();
-        // that.initFilterDialog();
-      }).catch(function(err) {
-        console.log(err);
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // [START_EXCLUDE]
-        if (errorCode === 'auth/account-exists-with-different-credential') {
-          alert('You have already signed up with a different auth provider for that email.');
-          // If you are using multiple auth providers on your app you should handle linking
-          // the user's accounts here.
-        }
-        // [END_EXCLUDE]
-      });
-      // [END signin]
-  } else {
-    // [START signout]
-    firebase.auth().signOut();
-    // [END signout]
-  }
-  // [START_EXCLUDE]
-  document.querySelector('.header').querySelector('#quickstart-sign-in').disabled = true;
-  // [END_EXCLUDE]
-}
-// [END buttoncallback]
 
 /**
  * initApp handles setting up UI event listeners and registering Firebase auth listeners:
@@ -91,48 +41,23 @@ FriendlyEats.prototype.toggleSignIn = function() {
 function initApp(fe) {
   fe.initTemplates();
 
-
   // Listening for auth state changes.
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
-      console.log("in auth listener")
       // The signed-in user info.
       fe.user = user;
       fe.initRouter();
       fe.initReviewDialog();
       fe.initFilterDialog();
 
-      // User is signed in.
-      document.querySelector('.header').querySelector('#quickstart-sign-in').textContent = 'Sign out';
-      // fe.initTemplates();
-
-      document.querySelector('.header').querySelector('#quickstart-sign-in').addEventListener('click', fe.toggleSignIn, false);
     } else {
-      console.log("in the else")
-
-      console.log("in the else in toggleSignIn, " + this.unsubscribe)
-      if (fe.unsubscribe) {
-        console.log("calling unsub")
-        fe.unsubscribe()
-      }
-      if (fe.unsub2) {
-        fe.unsub2()
-      }
-      var div = document.querySelector('main');
-      while(div.firstChild) {
-          div.removeChild(div.firstChild);
-      }
-
-      var div = document.querySelector('#section-header');
-      while(div.firstChild) {
-          div.removeChild(div.firstChild);
-      }
-
+      fe.user = null;
+      if (fe.unsubscribe) { fe.unsubscribe() }
+      if (fe.unsub2) { fe.unsub2() }
+      // Set up the full "not signed in" page
       fe.loginSetup()
-      document.querySelector('.header').querySelector('#quickstart-sign-in').textContent = 'Sign in with Google';
-      document.querySelector('.header').querySelector('#quickstart-sign-in').addEventListener('click', fe.toggleSignIn, false);
     }
-    document.querySelector('.header').querySelector('#quickstart-sign-in').disabled = false;
+    fe.setupAuthButton();
   });
 
   console.log("in initApp")
@@ -150,6 +75,8 @@ FriendlyEats.prototype.initRouter = function() {
     .on({
       '/': function() {
         that.updateQuery(that.filters);
+        // set the sign out button back up
+        that.setupAuthButton();
       }
     })
     .on({

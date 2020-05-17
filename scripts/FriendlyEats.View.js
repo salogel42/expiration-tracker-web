@@ -26,6 +26,38 @@ FriendlyEats.prototype.initTemplates = function() {
   });
 };
 
+
+FriendlyEats.prototype.toggleSignIn = function() {
+  console.log('In toggleSignIn')
+  if (!firebase.auth().currentUser) {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+
+    firebase.auth().signInWithPopup(provider)
+      .then(function() {
+        console.log('In the then')
+      }).catch(function(err) {
+        console.log(err);
+      });
+  } else {
+    if (this.unsubscribe) { this.unsubscribe() }
+    if (this.unsub2) { this.unsub2() }
+    firebase.auth().signOut();
+  }
+  document.querySelector('.header').querySelector('#quickstart-sign-in').disabled = true;
+}
+
+FriendlyEats.prototype.setupAuthButton = function() {
+  var authButton = document.querySelector('.header').querySelector('#quickstart-sign-in');
+  if (this.user) {
+    authButton.textContent = 'Sign out';
+  } else {
+    authButton.textContent = 'Sign in with Google';
+  }
+  authButton.addEventListener('click', this.toggleSignIn, false);
+  authButton.disabled = false;
+}
+
 FriendlyEats.prototype.viewHome = function() {
   this.getAllRestaurants();
 };
@@ -133,12 +165,7 @@ FriendlyEats.prototype.loginSetup = function() {
   var button = noRestaurantsEl.querySelector('#sign_in');
 
   var that = this;
-  button.addEventListener('click', function(event) {
-
-    var provider = new firebase.auth.GoogleAuthProvider();
-    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-    firebase.auth().signInWithPopup(provider)
-  });
+  button.addEventListener('click', this.toggleSignIn);
 
   this.replaceElement(document.querySelector('.header'), headerEl);
   this.replaceElement(document.querySelector('main'), noRestaurantsEl);

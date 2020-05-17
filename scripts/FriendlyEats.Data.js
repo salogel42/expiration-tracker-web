@@ -30,6 +30,7 @@ FriendlyEats.prototype.getAllRestaurants = function (render) {
 };
 
 FriendlyEats.prototype.getDocumentsInQuery = function (query, render) {
+  if (this.unsubscribe) { this.unsubscribe(); }
   this.unsubscribe = query.onSnapshot((snapshot) => {
     if (!snapshot.size) {
       return render();
