@@ -30,6 +30,18 @@ function FriendlyEats() { // eslint-disable-line no-redeclare
   this.user = null
   this.dialogs = {};
 
+  // var firebaseConfig = {
+  //   apiKey: "AIzaSyDN60oisFdM1dcYYfdC1maYBUkHzkuApzQ",
+  //   authDomain: "expiration-tracker-276323.firebaseapp.com",
+  //   databaseURL: "https://expiration-tracker-276323.firebaseio.com",
+  //   projectId: "expiration-tracker-276323",
+  //   storageBucket: "expiration-tracker-276323.appspot.com",
+  //   messagingSenderId: "879620136094",
+  //   appId: "1:879620136094:web:4303146e809debdd1f6f8f",
+  //   measurementId: "G-12QFC6Z3C3"
+  // };
+  // // Initialize Firebase
+  // firebase.initializeApp(firebaseConfig);
   var that = this;
 }
 
@@ -93,9 +105,13 @@ FriendlyEats.prototype.initRouter = function() {
     })
     .on({
       '/items/*': function() {
-        var path = that.getCleanPath(document.location.pathname);
-        var id = path.split('/')[2];
-        that.viewItem(id);
+        if (!that.user) {
+          that.router.navigate('/');
+        } else {
+          var path = that.getCleanPath(document.location.pathname);
+          var id = path.split('/')[2];
+          that.viewItem(id);
+        }
       }
     })
     .resolve();

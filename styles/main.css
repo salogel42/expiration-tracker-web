@@ -264,6 +264,19 @@
 
  #rating .material-icons {color: #feb22c;}
 
+ #item-card .header {
+   clear: both;
+   width: 100%;
+   font-size: 30px;
+ }
+
+ #item-card {
+   margin-top: 100px;
+ }
+
+ #item-image {
+   width: 300px;
+ }
  #review-card .header {
    clear: both;
    width: 100%;
@@ -335,7 +348,7 @@
  }
 
  #site-header .mdc-toolbar__title {
-   padding: 10px 0px 0px 0px;
+   padding: 15px 0px 0px 0px;
    margin: 0px;
  }
 

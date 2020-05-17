@@ -60,8 +60,8 @@
     <header id="site-header" class="mdc-toolbar mdc-toolbar--fixed">
       <div id="title" class="mdc-toolbar__row mdc-layout-grid">
         <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-          <span class="material-icons mdc-toolbar__icon--menu">restaurant</span>
-          <span class="mdc-toolbar__title">FriendlyEats</span>
+          <span class="material-icons mdc-toolbar__icon--menu">alarm</span>
+          <span class="mdc-toolbar__title">Expiration Traker</span>
         </section>
         <section class="develop-toolbar__section mdc-toolbar__section mdc-toolbar__section--align-end develop-toolbar__section--fit-content">
           <button disabled id="quickstart-sign-in" class="mdc-button">Sign in with Google</button>
@@ -178,12 +178,6 @@
     </header>
   </div>
 
-  <div hidden class="template" id="item-header">
-    <header class="mdc-layout__header mdc-layout__header--transparent" data-fir-style="backgroundImage:photo">
-      <div class="name"></div>
-    </header>
-  </div>
-
   <div hidden class="template" id="name"><b data-fir-content="itemName"></b></div>
 
   <div hidden class="template" id="rating"></div>
@@ -203,13 +197,24 @@
 
   <div hidden class="template mdc-layout-grid__cell--span-12" id="item-card">
     <div class="review max_width_600">
-        <div class="name">
-          <div class="author">
-            <span class="light" data-fir-content="userName"></span>
+        <div class="header">
+          <div class="name">
+            <span class="light" data-fir-content="name"></span>
           </div>
-          <div class="rating"></div>
         </div>
-        <div data-fir-content="text"></div>
+        <div data-fir-if="notes" data-fir-content="notes"></div>
+        <div clase="expiration">
+          <i class="template material-icons">event_busy</i>
+          <span data-fir-if="expirationDate" data-fir-date="expirationDate"></span>
+        </div>
+        <div class="notification">
+          <i class="template material-icons">notification_important</i>
+          <span data-fir-if="notificationDate" data-fir-date="notificationDate"></span>
+        </div>
+        <div>
+          <a data-fir-if="productLink" data-fir-link="productLink">Product Link</a>
+        </div>
+        <img id="item-image" data-fir-cloud-storage-image="imageFilename"/>
     </div>
   </div>
 
@@ -390,6 +395,7 @@
 <script src="/__/firebase/7.14.4/firebase-app.js"></script>
 <script src="/__/firebase/7.14.4/firebase-auth.js"></script>
 <script src="/__/firebase/7.14.4/firebase-firestore.js"></script>
+<script src="/__/firebase/7.14.4/firebase-storage.js"></script>
 <script src="/__/firebase/init.js"></script>
 
 <script src="//unpkg.com/navigo@6"></script>

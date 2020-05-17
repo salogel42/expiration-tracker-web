@@ -49,6 +49,7 @@ FriendlyEats.prototype.toggleSignIn = function() {
 
 FriendlyEats.prototype.setupAuthButton = function() {
   var authButton = document.querySelector('.header').querySelector('#quickstart-sign-in');
+  if (!authButton) return;
   if (this.user) {
     authButton.textContent = 'Sign out';
   } else {
@@ -421,31 +422,35 @@ FriendlyEats.prototype.viewItem = function(id) {
   return this.getItem(id)
     .then(function(doc) {
       var data = doc.data();
-      var dialog =  that.dialogs.add_review;
+      // var dialog =  that.dialogs.add_review;
+      //
+      // data.show_add_review = function() {
+      //   dialog.show();
+      // };
+      var mainEl = that.renderTemplate('main');
 
-      data.show_add_review = function() {
-        dialog.show();
-      };
+      var el = that.renderTemplate('item-card', data);
+      // el.querySelector('.rating').append(that.renderRating(data.rating));
+      mainEl.querySelector('#cards').append(el);
 
-      sectionHeaderEl = that.renderTemplate('item-header', data);
-      sectionHeaderEl
-        .querySelector('.name')
-        .append(that.renderName(data.name));
-      mainEl = that.renderTemplate('main');
-
-      ratings.forEach(function(rating) {
-        var data = rating.data();
-        var el = that.renderTemplate('review-card', data);
-        el.querySelector('.rating').append(that.renderRating(data.rating));
-        mainEl.querySelector('#cards').append(el);
-      });
+      // sectionHeaderEl = that.renderTemplate('header-base', data);
+      //
+      // ratings.forEach(function(rating) {
+      //   var data = rating.data();
+      //   var el = that.renderTemplate('review-card', data);
+      //   el.querySelector('.rating').append(that.renderRating(data.rating));
+      //   mainEl.querySelector('#cards').append(el);
+      // });
 
       var headerEl = that.renderTemplate('header-base', {
-        hasSectionHeader: true
+        hasSectionHeader: false
       });
 
-      that.replaceElement(document.querySelector('.header'), sectionHeaderEl);
+
+
+      that.replaceElement(document.querySelector('.header'), headerEl);
       that.replaceElement(document.querySelector('main'), mainEl);
+      that.setupAuthButton();
     })
     .then(function() {
       that.router.updatePageLinks();
@@ -511,6 +516,34 @@ FriendlyEats.prototype.render = function(el, data) {
     'data-fir-content': function(tel) {
       var field = tel.getAttribute('data-fir-content');
       tel.innerText = that.getDeepItem(data, field);
+    },
+    'data-fir-link': function(tel) {
+      var field = tel.getAttribute('data-fir-link');
+      tel.href = that.getDeepItem(data, field);
+    },
+    'data-fir-date': function(tel) {
+      var field = tel.getAttribute('data-fir-date');
+      var date = that.getDeepItem(data, field);
+      if (date) {
+        var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        tel.innerText = date.toDate().toLocaleDateString("en-US", options);
+      }
+    },
+    'data-fir-cloud-storage-image': function(tel) {
+      var field = tel.getAttribute('data-fir-cloud-storage-image');
+      var fileName = that.getDeepItem(data, field);
+      if (fileName) {
+        var storage = firebase.app().storage("gs://expiration-item-images");
+        // var storage = firebase.storage();
+
+        // Create a storage reference from our storage service
+        var storageRef = storage.ref();
+        var imageRef = storageRef.child(fileName);
+        imageRef.getDownloadURL().then(function(url) {
+          console.log(url)
+          tel.src = url
+        })
+      }
     },
     'data-fir-click': function(tel) {
       tel.addEventListener('click', function() {
