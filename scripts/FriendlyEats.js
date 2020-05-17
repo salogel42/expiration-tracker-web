@@ -30,7 +30,6 @@ function FriendlyEats() { // eslint-disable-line no-redeclare
   this.user = {}
   this.dialogs = {};
 
-
   var that = this;
 
   console.log("in the FriendlyEats function")
@@ -79,7 +78,7 @@ FriendlyEats.prototype.toggleSignIn = function() {
     // [END signout]
   }
   // [START_EXCLUDE]
-  document.getElementById('quickstart-sign-in').disabled = true;
+  document.querySelector('.header').querySelector('#quickstart-sign-in').disabled = true;
   // [END_EXCLUDE]
 }
 // [END buttoncallback]
@@ -90,19 +89,24 @@ FriendlyEats.prototype.toggleSignIn = function() {
  *    out, and that is where we update the UI.
  */
 function initApp(fe) {
+  fe.initTemplates();
+
+
   // Listening for auth state changes.
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       console.log("in auth listener")
       // The signed-in user info.
       fe.user = user;
-      fe.initTemplates();
       fe.initRouter();
       fe.initReviewDialog();
       fe.initFilterDialog();
 
       // User is signed in.
-      document.getElementById('quickstart-sign-in').textContent = 'Sign out';
+      document.querySelector('.header').querySelector('#quickstart-sign-in').textContent = 'Sign out';
+      // fe.initTemplates();
+
+      document.querySelector('.header').querySelector('#quickstart-sign-in').addEventListener('click', fe.toggleSignIn, false);
     } else {
       console.log("in the else")
 
@@ -124,24 +128,14 @@ function initApp(fe) {
           div.removeChild(div.firstChild);
       }
 
-
-      // window.reload()
-      // fe.user = user;
-      // fe.initTemplates();
-      // fe.initRouter();
-      // fe.initReviewDialog();
-      // fe.initFilterDialog();
-      // // User is signed out.
-      document.getElementById('quickstart-sign-in').textContent = 'Sign in with Google';
+      fe.loginSetup()
+      document.querySelector('.header').querySelector('#quickstart-sign-in').textContent = 'Sign in with Google';
+      document.querySelector('.header').querySelector('#quickstart-sign-in').addEventListener('click', fe.toggleSignIn, false);
     }
-    document.getElementById('quickstart-sign-in').disabled = false;
+    document.querySelector('.header').querySelector('#quickstart-sign-in').disabled = false;
   });
 
   console.log("in initApp")
-  document.getElementById('quickstart-sign-in').disabled = false;
-  // fe.initTemplates();
-
-  document.getElementById('quickstart-sign-in').addEventListener('click', fe.toggleSignIn, false);
 }
 
 
@@ -179,15 +173,17 @@ FriendlyEats.prototype.initRouter = function() {
     })
     .resolve();
 
-  this.unsub2 = firebase
-    .firestore()
-    .collection('restaurants')
-    .limit(1)
-    .onSnapshot(function(snapshot) {
-      if (snapshot.empty) {
-        that.router.navigate('/setup');
-      }
-    });
+  if (this.user) {
+    this.unsub2 = firebase
+      .firestore()
+      .collection('restaurants')
+      .limit(1)
+      .onSnapshot(function(snapshot) {
+        if (snapshot.empty) {
+          that.router.navigate('/setup');
+        }
+      });
+  }
 };
 
 FriendlyEats.prototype.getCleanPath = function(dirtyPath) {

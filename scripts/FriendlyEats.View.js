@@ -36,7 +36,9 @@ FriendlyEats.prototype.viewList = function(filters, filter_description) {
   }
 
   var mainEl = this.renderTemplate('main-adjusted');
-  var headerEl = document.querySelector('#site-header')
+  var headerEl = this.renderTemplate('header-base', {
+    hasSectionHeader: true
+  });
 
   this.replaceElement(
     headerEl.querySelector('#section-header'),
@@ -45,6 +47,7 @@ FriendlyEats.prototype.viewList = function(filters, filter_description) {
     })
   );
 
+  this.replaceElement(document.querySelector('.header'), headerEl);
   this.replaceElement(document.querySelector('main'), mainEl);
 
   var that = this;
@@ -118,6 +121,28 @@ FriendlyEats.prototype.viewList = function(filters, filter_description) {
 
   mdc.autoInit();
 };
+
+FriendlyEats.prototype.loginSetup = function() {
+  console.log("trying to set up login: " + this)
+  var headerEl = this.renderTemplate('header-base', {
+    hasSectionHeader: false
+  });
+
+  var noRestaurantsEl = this.renderTemplate('not-signed-in');
+
+  var button = noRestaurantsEl.querySelector('#sign_in');
+
+  var that = this;
+  button.addEventListener('click', function(event) {
+
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    firebase.auth().signInWithPopup(provider)
+  });
+
+  this.replaceElement(document.querySelector('.header'), headerEl);
+  this.replaceElement(document.querySelector('main'), noRestaurantsEl);
+}
 
 FriendlyEats.prototype.viewSetup = function() {
   var headerEl = this.renderTemplate('header-base', {

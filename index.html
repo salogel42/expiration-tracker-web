@@ -53,18 +53,23 @@
 </head>
 <body>
 <div>
-  <header id="site-header" class="mdc-toolbar mdc-toolbar--fixed">
-    <div id="title" class="mdc-toolbar__row mdc-layout-grid">
-      <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-        <span class="material-icons mdc-toolbar__icon--menu">restaurant</span>
-        <span class="mdc-toolbar__title">FriendlyEats</span>
-      </section>
-      <section class="develop-toolbar__section mdc-toolbar__section mdc-toolbar__section--align-end develop-toolbar__section--fit-content">
-        <button disabled id="quickstart-sign-in" class="mdc-button">Sign in with Google</button>
-      </section>
-    </div>
-    <div id="section-header" data-fir-if="hasSectionHeader"></div>
-  </header>
+
+  <div class="header"></div>
+
+  <div hidden class="template" id="header-base">
+    <header id="site-header" class="mdc-toolbar mdc-toolbar--fixed">
+      <div id="title" class="mdc-toolbar__row mdc-layout-grid">
+        <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+          <span class="material-icons mdc-toolbar__icon--menu">restaurant</span>
+          <span class="mdc-toolbar__title">FriendlyEats</span>
+        </section>
+        <section class="develop-toolbar__section mdc-toolbar__section mdc-toolbar__section--align-end develop-toolbar__section--fit-content">
+          <button disabled id="quickstart-sign-in" class="mdc-button">Sign in with Google</button>
+        </section>
+      </div>
+      <div id="section-header" data-fir-if="hasSectionHeader"></div>
+    </header>
+  </div>
 
   <main></main>
 
@@ -80,6 +85,19 @@
   <div hidden class="template" id="main">
     <div id="message-cards-container" class="mdc-layout-grid">
       <div id="cards" class="mdc-layout-grid__inner"></div>
+    </div>
+  </div>
+
+  <div hidden class="template" id="not-signed-in">
+    <div id="guy-container" class="mdc-toolbar-fixed-adjust">
+      <img class="guy" src="/images/guy_fireats.png" />
+      <div class="text">
+        You are not currently signed in.<br />
+      </div>
+      <br />
+      <a class="mdc-button" id="sign_in">
+        Sign in
+      </a>
     </div>
   </div>
 
