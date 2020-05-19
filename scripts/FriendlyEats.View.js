@@ -16,6 +16,7 @@
 'use strict';
 
 FriendlyEats.ID_CONSTANT = 'fir-';
+FriendlyEats.ID_CONSTANT_ITEM = 'fir-item-';
 
 FriendlyEats.prototype.initTemplates = function() {
   this.templates = {};
@@ -60,7 +61,8 @@ FriendlyEats.prototype.setupAuthButton = function() {
 }
 
 FriendlyEats.prototype.viewHome = function() {
-  this.getAllRestaurants();
+  // this.getAllRestaurants();
+  this.getAllItems();
 };
 
 FriendlyEats.prototype.viewList = function(filters, filter_description) {
@@ -148,6 +150,69 @@ FriendlyEats.prototype.viewList = function(filters, filter_description) {
   } else {
     this.getAllRestaurants(renderResults);
   }
+
+  var renderItemResults = function(doc) {
+    if (!doc) {
+      var headerEl = that.renderTemplate('header-base', {
+        hasSectionHeader: true
+      });
+
+      var noResultsEl = that.renderTemplate('no-results');
+
+      that.replaceElement(
+        headerEl.querySelector('#section-header'),
+        that.renderTemplate('filter-display', {
+          filter_description: filter_description
+        })
+      );
+
+      headerEl.querySelector('#show-filters').addEventListener('click', function() {
+        that.dialogs.filter.show();
+      });
+
+      that.replaceElement(document.querySelector('.header'), headerEl);
+      that.replaceElement(document.querySelector('main'), noResultsEl);
+      return;
+    }
+    var data = doc.data();
+    data['.id'] = doc.id;
+    data['go_to_item'] = function() {
+      that.router.navigate('/item/' + doc.id);
+    };
+
+    // check if restaurant card has already been rendered
+    var existingItemCardEl = mainEl.querySelector('#' + that.ID_CONSTANT_ITEM + doc.id);
+    var el = existingItemCardEl || that.renderTemplate('item-card', data);
+
+    // var ratingEl = el.querySelector('.rating');
+    // var priceEl = el.querySelector('.price');
+    //
+    // // clear out existing rating and price if they already exist
+    // if (existingRestaurantCardEl) {
+    //   ratingEl.innerHTML = '';
+    //   priceEl.innerHTML = '';
+    // }
+
+    // ratingEl.append(that.renderRating(data.avgRating));
+    // priceEl.append(that.renderPrice(data.price));
+
+    if (!existingItemCardEl) {
+      mainEl.querySelector('#cards').append(el);
+    }
+  };
+
+
+    // if (filters.city || filters.category || filters.price || filters.sort !== 'Rating' ) {
+    //   this.getFilteredRestaurants({
+    //     city: filters.city || 'Any',
+    //     category: filters.category || 'Any',
+    //     price: filters.price || 'Any',
+    //     sort: filters.sort
+    //   }, renderResults);
+    // } else {
+    this.getAllItems(renderItemResults);
+    // }
+
 
   var toolbar = mdc.toolbar.MDCToolbar.attachTo(document.querySelector('.mdc-toolbar'));
   toolbar.fixedAdjustElement = document.querySelector('.mdc-toolbar-fixed-adjust');

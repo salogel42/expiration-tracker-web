@@ -26,6 +26,20 @@ FriendlyEats.prototype.getAllRestaurants = function (render) {
     .collection('restaurants')
     .orderBy('avgRating', 'desc')
     .limit(50);
+  // this.getDocumentsInQuery(query, render);
+};
+
+FriendlyEats.prototype.getAllItems = function (render) {
+  console.log("trying to get all items")
+  if (!this.user) { return }
+  console.log(this.user)
+  console.log(this.user.id)
+  console.log(this.user.uid)
+  const query = firebase.firestore()
+    .collection('items')
+    .where("userId",  "==", this.user.uid)
+    .orderBy('expirationDate', 'desc')
+    .limit(50);
   this.getDocumentsInQuery(query, render);
 };
 
